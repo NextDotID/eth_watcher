@@ -1,0 +1,12 @@
+[package]
+name = "eth_watcher"
+version = "0.1.0"
+edition = "2021"
+autobins = true
+
+[dependencies]
+anyhow = "1.0"
+tokio = { version = "1", features = ["full"] }
+
+web3 = "0.18"
+ethers = "1.0"
