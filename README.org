@@ -1,0 +1,14 @@
+* EVM-based chain tx / event watcher
+
+** [0/5] Features (TODO list)
+
+- [ ] Multi-chain support
+- [ ] Auto fetch each chain's latest block (with "wait newest blocks to
+  become stable" mechanism)
+- [ ] Record progress (how many blocks are fetched)
+- [ ] Parse each newest tx / event to external JavaScript filters
+- [ ] [0/4] Let JS filters decide
+  - [ ] Which chains to be fetched.
+  - [ ] which tx / event should be wrapped
+  - [ ] where to sent webhook call
+  - [ ] determines retry mechanism
