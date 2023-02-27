@@ -1,3 +1,5 @@
+/.env
+
 /target
 
 /src/bin/playground/main.rs

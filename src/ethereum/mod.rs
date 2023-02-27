@@ -1,7 +1,7 @@
 use anyhow::Result;
 use web3::{
     transports,
-    types::{Block, BlockNumber, U64, H256, BlockId, Transaction},
+    types::{Block, BlockNumber, Transaction, U64},
 };
 
 pub struct Client {
@@ -33,13 +33,13 @@ impl Client {
             None => {
                 self.web3
                     .eth()
-                    .block_with_txs(BlockId::Number(BlockNumber::Latest))
+                    .block_with_txs(BlockNumber::Latest.into())
                     .await?
             }
             Some(height) => {
                 self.web3
                     .eth()
-                    .block_with_txs(BlockId::Number(BlockNumber::Number(height)))
+                    .block_with_txs(height.into())
                     .await?
             }
         };

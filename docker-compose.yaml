@@ -1,0 +1,15 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ethwatcher
+      POSTGRES_PASSWORD: eiyaeDiephah0xoh2Aelaikae0phuuth
+      POSTGRES_DB: ethwatcher
+    ports:
+    - 127.0.0.1:5431:5432
+    volumes:
+    - ethwatcher_db:/var/lib/postgresql/data
+
+volumes:
+  ethwatcher_db: {}
