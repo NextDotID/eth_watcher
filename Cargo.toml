@@ -8,6 +8,10 @@ autobins = true
 members = [ ".", "migration", "entity" ]
 
 [dependencies]
+migration = { path = "./migration" }
+entities = { path = "./entity" }
+
+chrono = { version = "0.4", features = ["default", "serde"] }
 tracing = "0.1"
 tracing-subscriber = "0.3"
 anyhow = "1.0"
@@ -19,4 +23,4 @@ web3 = "0.18"
 ethers = "1.0"
 
 # ORM
-sea-orm = { version = "^0", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros"] }
+sea-orm = { version = "^0", features = ["sqlx-postgres", "sqlx-sqlite", "runtime-tokio-rustls", "macros"] }
