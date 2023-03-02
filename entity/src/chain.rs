@@ -16,7 +16,7 @@ pub struct Model {
     pub id: i32,
     pub name: String,
     pub rpc: String,
-    pub network_id: Option<String>,
+    pub chain_id: Option<String>,
     pub created_at: DateTime,
 }
 
@@ -25,7 +25,7 @@ pub enum Column {
     Id,
     Name,
     Rpc,
-    NetworkId,
+    ChainId,
     CreatedAt,
 }
 
@@ -51,7 +51,7 @@ impl ColumnTrait for Column {
             Self::Id => ColumnType::Integer.def(),
             Self::Name => ColumnType::String(None).def().unique(),
             Self::Rpc => ColumnType::String(None).def(),
-            Self::NetworkId => ColumnType::String(None).def().null(),
+            Self::ChainId => ColumnType::String(None).def().null(),
             Self::CreatedAt => ColumnType::DateTime.def(),
         }
     }

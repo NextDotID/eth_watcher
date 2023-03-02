@@ -1,7 +1,7 @@
 use anyhow::Result;
 use web3::{
     transports,
-    types::{Block, BlockNumber, Transaction, U64},
+    types::{Block, BlockNumber, Transaction, U64, U256},
 };
 
 pub struct Client {
@@ -56,5 +56,10 @@ impl Client {
                 }
             }
         }
+    }
+
+    pub async fn get_chain_id(&self) -> Result<U256> {
+        let chain_id = self.web3.eth().chain_id().await?;
+        Ok(chain_id)
     }
 }

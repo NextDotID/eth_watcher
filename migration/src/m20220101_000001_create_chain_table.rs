@@ -20,7 +20,7 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Chain::Name).string().not_null().unique_key())
                     .col(ColumnDef::new(Chain::RPC).string().not_null())
-                    .col(ColumnDef::new(Chain::NetworkID).string())
+                    .col(ColumnDef::new(Chain::ChainID).string())
                     .col(ColumnDef::new(Chain::CreatedAt).date_time().not_null())
                     .to_owned(),
             )
@@ -41,6 +41,6 @@ enum Chain {
     Id,
     Name,
     RPC,
-    NetworkID,
+    ChainID,
     CreatedAt,
 }
