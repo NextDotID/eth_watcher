@@ -5,7 +5,7 @@ use crate::model::tests::init_test_db;
 
 use super::*;
 
-async fn generate_data(db: &DatabaseConnection) -> Result<ChainModel> {
+pub(crate) async fn generate_data(db: &DatabaseConnection) -> Result<ChainModel> {
     let chain_am = ActiveModel {
         id: ActiveValue::NotSet,
         name: ActiveValue::Set("polygon".into()),

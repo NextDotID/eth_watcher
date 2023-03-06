@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests;
+pub mod tests;
 
 use anyhow::Result;
 use entities::chain::{Model as ChainModel, Entity as ChainEntity, Column as ChainColumn, ActiveModel};
