@@ -20,6 +20,7 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 typetag = "0.2"
 deno_core = "0.174.0"
+serde_v8 = "0.85"
 tempfile = "3"
 uuid = { version = "1", features = ["v4"] }
 

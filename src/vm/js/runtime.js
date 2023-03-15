@@ -22,4 +22,9 @@
             ops.op_console_error(argsToMessage(...args));
         },
     };
+    // For inject_into_vm() use.
+    globalThis.ew = {};
+
+    // All actions triggered in script should be saved here.
+    globalThis.actions = [];
 })(globalThis);

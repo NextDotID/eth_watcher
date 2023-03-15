@@ -4,19 +4,17 @@ mod ops;
 mod tests;
 
 use anyhow::Result;
-use deno_core::Extension;
+use deno_core::{Extension, v8::{Global, Value}, JsRuntime};
+use serde::Serialize;
 use std::rc::Rc;
 use tracing::{span, Level};
 
 /// Run given JS code in VM.
-async fn run_js_code(code: &str) -> Result<()> {
+async fn run_js_code(js_runtime: &mut JsRuntime, code: &str) -> Result<Global<Value>> {
     let span = span!(Level::INFO, "Running JS code");
     let _guard = span.enter();
 
-    let mut js_runtime = new_js_runtime()?;
-    js_runtime.execute_script("[ethwatcher:main.js]", code)?;
-
-    Ok(())
+    js_runtime.execute_script("[ethwatcher:main.js]", code)
 }
 
 /// Run a specific JS file in VM.
@@ -29,11 +27,13 @@ async fn run_js_file(file_path: &str) -> Result<()> {
     let mod_id = js_runtime.load_main_module(&main_module, None).await?;
     let result = js_runtime.mod_evaluate(mod_id);
     js_runtime.run_event_loop(false).await?;
-    result.await?
+
+    result.await?;
+    Ok(())
 }
 
 /// Create a new JS runtime, with `ops` injected.
-fn new_js_runtime() -> Result<deno_core::JsRuntime> {
+fn new_js_runtime() -> Result<JsRuntime> {
     let extension_console = Extension::builder("console")
         .ops(vec![
             ops::op_console_log::decl(),
@@ -43,7 +43,7 @@ fn new_js_runtime() -> Result<deno_core::JsRuntime> {
         ])
         .build();
 
-    let mut js_runtime = deno_core::JsRuntime::new(deno_core::RuntimeOptions {
+    let mut js_runtime = JsRuntime::new(deno_core::RuntimeOptions {
         module_loader: Some(Rc::new(deno_core::FsModuleLoader)),
         extensions: vec![extension_console],
         ..Default::default()
@@ -51,4 +51,31 @@ fn new_js_runtime() -> Result<deno_core::JsRuntime> {
     js_runtime.execute_script("[ethwatcher:runtime.js]", include_str!("./js/runtime.js"))?;
 
     Ok(js_runtime)
+}
+
+fn inject_into_vm<T>(runtime: &mut JsRuntime, var_name: &str, data: &T) -> Result<Global<Value>> where T: Serialize + ?Sized {
+    let value = serde_json::to_string(data)?;
+    let inject_code = format!(r#"((globalThis)=>{{ globalThis.ew.{} = {}; }})(globalThis);"#, var_name, value);
+    let result = runtime.execute_script("[ethwatcher:inject_value.js]", &inject_code)?;
+    Ok(result)
+}
+
+fn eval_and_return(context: &mut JsRuntime, code: &str) -> Result<serde_json::Value> {
+    let res = context.execute_script("<anon>", code);
+    match res {
+        Ok(global) => {
+            let scope = &mut context.handle_scope();
+            let local = deno_core::v8::Local::new(scope, global);
+            // Deserialize a `v8` object into a Rust type using `serde_v8`,
+            // in this case deserialize to a JSON `Value`.
+            let deserialized_value =
+                serde_v8::from_v8::<serde_json::Value>(scope, local);
+
+            match deserialized_value {
+                Ok(value) => Ok(value),
+                Err(err) => Err(err.into()),
+            }
+        }
+        Err(err) => Err(err.into()),
+    }
 }
