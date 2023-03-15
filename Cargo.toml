@@ -33,3 +33,6 @@ sea-orm = { version = "^0", features = [
   "runtime-tokio-rustls",
   "macros",
 ] }
+
+[dev-dependencies]
+ctor = "0.1"
