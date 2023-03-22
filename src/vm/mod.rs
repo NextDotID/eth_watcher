@@ -4,7 +4,10 @@ mod ops;
 mod tests;
 
 use anyhow::Result;
-use deno_core::{Extension, v8::{Global, Value}, JsRuntime};
+use deno_core::{
+    v8::{Global, Value},
+    Extension, JsRuntime,
+};
 use serde::Serialize;
 use std::rc::Rc;
 use tracing::{span, Level};
@@ -53,9 +56,15 @@ fn new_js_runtime() -> Result<JsRuntime> {
     Ok(js_runtime)
 }
 
-fn inject_into_vm<T>(runtime: &mut JsRuntime, var_name: &str, data: &T) -> Result<Global<Value>> where T: Serialize + ?Sized {
+fn inject_into_vm<T>(runtime: &mut JsRuntime, var_name: &str, data: &T) -> Result<Global<Value>>
+where
+    T: Serialize + ?Sized,
+{
     let value = serde_json::to_string(data)?;
-    let inject_code = format!(r#"((globalThis)=>{{ globalThis.ew.{} = {}; }})(globalThis);"#, var_name, value);
+    let inject_code = format!(
+        r#"((globalThis)=>{{ globalThis.ew.{} = {}; }})(globalThis);"#,
+        var_name, value
+    );
     let result = runtime.execute_script("[ethwatcher:inject_value.js]", &inject_code)?;
     Ok(result)
 }
@@ -68,8 +77,7 @@ fn eval_and_return(context: &mut JsRuntime, code: &str) -> Result<serde_json::Va
             let local = deno_core::v8::Local::new(scope, global);
             // Deserialize a `v8` object into a Rust type using `serde_v8`,
             // in this case deserialize to a JSON `Value`.
-            let deserialized_value =
-                serde_v8::from_v8::<serde_json::Value>(scope, local);
+            let deserialized_value = serde_v8::from_v8::<serde_json::Value>(scope, local);
 
             match deserialized_value {
                 Ok(value) => Ok(value),
@@ -78,4 +86,10 @@ fn eval_and_return(context: &mut JsRuntime, code: &str) -> Result<serde_json::Va
         }
         Err(err) => Err(err.into()),
     }
+}
+
+#[derive(Debug, Clone, Copy, Serialize)]
+enum Event {
+    #[serde(rename = "new_block")]
+    NewBlock,
 }
