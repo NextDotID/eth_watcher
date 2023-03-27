@@ -65,6 +65,10 @@ impl BlockCallbackRequest {
     /// Create a new block callback request from fetched block and database model.
     pub fn from_block(block: &Block<Transaction>, chain_model: &ChainModel) -> Result<Self> {
         Ok(Self {
+            meta: BlockCallMeta {
+                event: super::Event::NewBlock,
+                triggered_at: chrono::Utc::now().naive_utc(),
+            },
             block: block.clone(),
             chain: chain_model.try_into()?,
         })

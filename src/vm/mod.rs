@@ -88,8 +88,8 @@ fn eval_and_return(context: &mut JsRuntime, code: &str) -> Result<serde_json::Va
     }
 }
 
-#[derive(Debug, Clone, Copy, Serialize)]
-enum Event {
+#[derive(Debug, Clone, Copy, Serialize, Eq, PartialEq)]
+pub enum Event {
     #[serde(rename = "new_block")]
     NewBlock,
 }

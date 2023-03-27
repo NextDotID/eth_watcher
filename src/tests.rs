@@ -1,4 +1,7 @@
-use tracing_subscriber::{FmtSubscriber, filter::{EnvFilter, LevelFilter}};
+use tracing_subscriber::{
+    filter::{EnvFilter, LevelFilter},
+    FmtSubscriber,
+};
 
 #[ctor::ctor]
 fn before_each_unit_test() {
@@ -6,7 +9,8 @@ fn before_each_unit_test() {
         .with_env_filter(
             EnvFilter::builder()
                 .with_default_directive(LevelFilter::TRACE.into())
-                .from_env_lossy(),
+                .from_env_lossy()
+                .add_directive("hyper=info".parse().unwrap()),
         )
         .with_ansi(false)
         .finish();

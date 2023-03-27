@@ -1,3 +1,6 @@
+#[cfg(test)]
+pub mod tests;
+
 use anyhow::Result;
 use web3::{
     transports,
